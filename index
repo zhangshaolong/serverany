@@ -1,0 +1,56 @@
+#!/usr/bin/env node
+
+const http = require("http");
+const https = require("https");
+const fs = require("fs");
+const URL = require("url");
+const express = require("express");
+const path = require("path");
+const mockProxyMiddleware = require("mock-proxy-middleware");
+
+// serverany --index index.html --base ./ --config config.json --port 8800
+
+const defaultArgs = {
+  index: "index.html",
+  base: "./",
+  config: "config.js",
+  port: 8800,
+};
+
+const parseArgs = () => {
+  const argv = process.argv.slice(2);
+  const args = {};
+  for (let i = 0; i < argv.length; i++) {
+    argv[i].replace(/^\-\-(.*)$/, (all, key) => {
+      args[key] = argv[++i];
+    });
+  }
+  return Object.assign({}, defaultArgs, args);
+};
+
+const args = parseArgs();
+
+const app = express();
+
+app.use(express.static(path.resolve(__dirname, args.base)));
+
+const configPath = path.resolve(__dirname, args.config);
+
+try {
+  fs.accessSync(configPath, fs.constants.R_OK);
+  app.use(mockProxyMiddleware(configPath));
+} catch (e) {}
+
+app.use("/", (req, res) => {
+  res.sendFile(path.resolve(__dirname, args.index));
+});
+
+const options = {
+  key: fs.readFileSync("./key"),
+  cert: fs.readFileSync("./cert"),
+};
+
+http.createServer(app).listen(Number(args.port));
+https.createServer(options, app).listen(Number(args.port) + 1);
+console.log(`http://localhost:${args.port}/`);
+console.log(`https://localhost:${Number(args.port) + 1}`);

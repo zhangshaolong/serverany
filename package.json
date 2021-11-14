@@ -1,0 +1,20 @@
+{
+  "name": "serverany",
+  "version": "0.0.1",
+  "description": "",
+  "bin": {
+    "serverany": "./index"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {},
+  "dependencies": {
+    "express": "^4.17.1",
+    "mock-proxy-middleware": "^2.0.21"
+  },
+  "files": [
+    "index",
+    "cert",
+    "key"
+  ]
+}
