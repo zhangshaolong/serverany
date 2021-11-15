@@ -1,7 +1,7 @@
 {
   "name": "serverany",
-  "version": "0.0.1",
-  "description": "",
+  "version": "0.0.2",
+  "description": "a static server with mock and proxy for any path",
   "bin": {
     "serverany": "./index"
   },

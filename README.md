@@ -6,5 +6,5 @@
   // 安装
   npm install serverany -g
   // 启动服务
-  serverany --index index.html --base ./ --config config.json --port 8800
+  serverany --index index.html --base ${pwd} --config config.json --port 8800
 ```
