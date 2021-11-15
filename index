@@ -1,19 +1,19 @@
 #!/usr/bin/env node
 
-const http = require("http");
-const https = require("https");
-const fs = require("fs");
-const URL = require("url");
-const express = require("express");
-const path = require("path");
-const mockProxyMiddleware = require("mock-proxy-middleware");
+const fs = require('fs');
+const http = require('http');
+const https = require('https');
+const path = require('path');
 
-// serverany --index index.html --base ${pwd} --config config.json --port 8800
+const express = require('express');
+const mockProxyMiddleware = require('mock-proxy-middleware');
+
+// serverany --index index.html --base ${pwd} --config config.js --port 8800
 
 const defaultArgs = {
-  index: "index.html",
+  index: 'index.html',
   base: process.cwd(),
-  config: "config.js",
+  config: 'config.js',
   port: 8800,
 };
 
@@ -21,33 +21,40 @@ const parseArgs = () => {
   const argv = process.argv.slice(2);
   const args = {};
   for (let i = 0; i < argv.length; i++) {
-    argv[i].replace(/^\-\-(.*)$/, (all, key) => {
+    argv[i].replace(/^--(.*)$/, (all, key) => {
       args[key] = argv[++i];
     });
   }
   return Object.assign({}, defaultArgs, args);
 };
 
+const getAbsolutePath = (filePath, base) => {
+  if (filePath.startsWith('/')) {
+    return filePath;
+  }
+  return path.resolve(base, filePath);
+};
+
 const args = parseArgs();
 
 const app = express();
 
-app.use(express.static(args.base));
+app.use(express.static(getAbsolutePath(args.base)));
 
-const configPath = path.resolve(args.base, args.config);
+const configPath = getAbsolutePath(args.config, args.base);
 
 try {
   fs.accessSync(configPath, fs.constants.R_OK);
   app.use(mockProxyMiddleware(configPath));
 } catch (e) {}
 
-app.use("/", (req, res) => {
-  res.sendFile(path.resolve(args.base, args.index));
+app.use('/', (req, res) => {
+  res.sendFile(getAbsolutePath(args.index, args.base));
 });
 
 const options = {
-  key: fs.readFileSync(path.resolve(__dirname, "./key")),
-  cert: fs.readFileSync(path.resolve(__dirname, "./cert")),
+  key: fs.readFileSync(path.resolve(__dirname, './key')),
+  cert: fs.readFileSync(path.resolve(__dirname, './cert')),
 };
 
 http.createServer(app).listen(Number(args.port));
