@@ -6,7 +6,7 @@
   // 安装
   npm install serverany -g
   // 启动服务
-  serverany --index index.html --base ${pwd} --config config.js --port 8800
+  serverany --index index.html --base ${cwd} --config config.js --port 8800
 
 --index 配置访问的页面地址，默认值index.html，即在--base文件夹下的index.html
 --base 获取相对地址的基准路径，默认为执行serverany的目录

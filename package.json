@@ -1,13 +1,11 @@
 {
   "name": "serverany",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "a static server with mock and proxy for any path",
   "bin": {
     "serverany": "./index"
   },
-  "author": "",
   "license": "ISC",
-  "devDependencies": {},
   "dependencies": {
     "express": "^4.17.1",
     "mock-proxy-middleware": "^2.0.21",

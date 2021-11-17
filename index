@@ -8,7 +8,7 @@ const express = require('express');
 const serveIndex = require('serve-index');
 const mockProxyMiddleware = require('mock-proxy-middleware');
 
-// serverany --index index.html --base ${pwd} --config config.js --port 8800
+// serverany --index index.html --base ${cwd} --config config.js --port 8800
 
 const defaultArgs = {
   index: 'index.html',
@@ -35,24 +35,35 @@ const getAbsolutePath = (filePath, base) => {
   return path.resolve(base, filePath);
 };
 
+const canRead = (filePath) => {
+  try {
+    fs.accessSync(filePath, fs.constants.R_OK);
+    return true;
+  } catch (e) {}
+  return false;
+};
+
 const args = parseArgs();
 
 const app = express();
 
 const configPath = getAbsolutePath(args.config, args.base);
 
-try {
-  fs.accessSync(configPath, fs.constants.R_OK);
+if (canRead(configPath)) {
   app.use(mockProxyMiddleware(configPath));
-} catch (e) {}
+}
 
 app.use(express.static(getAbsolutePath(args.base)));
 
 app.use(serveIndex(getAbsolutePath(args.base), {icons: true}));
 
-app.use('/', (req, res) => {
-  res.sendFile(getAbsolutePath(args.index, args.base));
-});
+const indexPath = getAbsolutePath(args.index, args.base);
+
+if (canRead(indexPath)) {
+  app.use('/', (req, res) => {
+    res.sendFile(indexPath);
+  });
+}
 
 const options = {
   key: fs.readFileSync(path.resolve(__dirname, './key')),
@@ -61,5 +72,5 @@ const options = {
 
 http.createServer(app).listen(Number(args.port));
 https.createServer(options, app).listen(Number(args.port) + 1);
-console.log(`http://localhost:${args.port}/`);
-console.log(`https://localhost:${Number(args.port) + 1}`);
+
+console.log(`\n>>> http://localhost:${args.port}\n\n>>> https://localhost:${Number(args.port) + 1}`);
