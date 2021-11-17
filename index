@@ -4,8 +4,8 @@ const fs = require('fs');
 const http = require('http');
 const https = require('https');
 const path = require('path');
-
 const express = require('express');
+const serveIndex = require('serve-index');
 const mockProxyMiddleware = require('mock-proxy-middleware');
 
 // serverany --index index.html --base ${pwd} --config config.js --port 8800
@@ -39,14 +39,16 @@ const args = parseArgs();
 
 const app = express();
 
-app.use(express.static(getAbsolutePath(args.base)));
-
 const configPath = getAbsolutePath(args.config, args.base);
 
 try {
   fs.accessSync(configPath, fs.constants.R_OK);
   app.use(mockProxyMiddleware(configPath));
 } catch (e) {}
+
+app.use(express.static(getAbsolutePath(args.base)));
+
+app.use(serveIndex(getAbsolutePath(args.base), {icons: true}));
 
 app.use('/', (req, res) => {
   res.sendFile(getAbsolutePath(args.index, args.base));
