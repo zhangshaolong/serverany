@@ -25,7 +25,9 @@ const parseArgs = () => {
       args[key] = argv[++i];
     });
   }
-  return Object.assign({}, defaultArgs, args);
+  const mergedArgs = Object.assign({}, defaultArgs, args);
+  mergedArgs.base = path.resolve(mergedArgs.base);
+  return mergedArgs;
 };
 
 const getAbsolutePath = (filePath, base) => {
@@ -53,9 +55,9 @@ if (canRead(configPath)) {
   app.use(mockProxyMiddleware(configPath));
 }
 
-app.use(express.static(getAbsolutePath(args.base)));
+app.use(express.static(args.base));
 
-app.use(serveIndex(getAbsolutePath(args.base), {icons: true}));
+app.use(serveIndex(args.base, {icons: true}));
 
 const indexPath = getAbsolutePath(args.index, args.base);
 
