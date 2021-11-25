@@ -7,11 +7,10 @@
   npm install serverany -g
   // 启动服务
   serverany --index index.html --base ${cwd} --config config.js --port 8800
-
+```
 --index 配置访问的页面地址，默认值index.html，即在--base文件夹下的index.html
 --base 获取相对地址的基准路径，默认为执行serverany的目录
 --config mock proxy配置文件地址，默认为config.js，即在--base文件夹下的config.js，配置请参考[mock-proxy-middleware](https://github.com/zhangshaolong/mock-proxy-middleware "mock-proxy-middleware")
 --port 默认的服务端口，默认http端口为8800，https端口基于http端口+1
 
 注意：如果配置的路径以“/”开头，那么认为是绝对地址，不再基于--base进行查找。
-```
