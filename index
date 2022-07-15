@@ -6,7 +6,7 @@ const https = require('https');
 const path = require('path');
 const express = require('express');
 const serveIndex = require('serve-index');
-const mockProxyMiddleware = require('mock-proxy-middleware');
+const autoProxy = require('mock-proxy-autocookie');
 
 // serverany --index index.html --base ${cwd} --config config.js --port 8800
 
@@ -52,7 +52,7 @@ const app = express();
 const configPath = getAbsolutePath(args.config, args.base);
 
 if (canRead(configPath)) {
-  app.use(mockProxyMiddleware(configPath));
+  app.use(autoProxy(configPath));
 }
 
 app.use(express.static(args.base));
